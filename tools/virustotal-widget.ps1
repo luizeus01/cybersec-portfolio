@@ -3,7 +3,7 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
-$ApiKey = "91115d46a317f62eaef492e59c004105bf3c12b4d9bb51795c24c21d66c98e92"
+$ApiKey = "" # <==================== Add your API key from Virus Total
 $WindowTitle = "VirusTotal - IP, Domain, Hash or URL"
 $BackgroundColor = "#1E1E1E"
 
