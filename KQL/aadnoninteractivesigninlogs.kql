@@ -1,0 +1,26 @@
+// NonInteractive
+// KQL used to get non-NonInteractive sign-in logs from user and get some details from IdentityInfo Table
+let UPN = "";
+let USERINFO =
+    IdentityInfo
+    | where AccountUPN contains UPN
+    | extend Account_lower = tolower(AccountUPN)
+    | summarize arg_max(TimeGenerated, *) by Account_lower;
+AADNonInteractiveUserSignInLogs
+| where TimeGenerated > ago(1d)
+| where UserPrincipalName contains UPN
+| where ResultType == 0
+| extend UPN_lower = tolower(UserPrincipalName)
+| extend Autentication = iff(ResultType != 0, strcat_delim(" , ", ResultType, ResultSignature, ResultDescription), "Success")
+| extend DeviceDetail_Dynamic = todynamic(DeviceDetail)
+| extend MfaDetail_Dynamic = todynamic(MfaDetail)
+| extend Device_Name = tostring(DeviceDetail_Dynamic.displayName)
+| extend Device_OS = tostring(DeviceDetail_Dynamic.operatingSystem)
+| extend Device_ID = tostring(DeviceDetail_Dynamic.deviceId)
+| extend Device_Managed = tostring(DeviceDetail_Dynamic.trustType)
+| extend DeviceProperties = iff(Device_Name != "", strcat_delim(" , ", strcat("Host: ", Device_Name), Device_Managed, strcat("OS: ", Device_OS), strcat("ID: ", Device_ID)), strcat("OS: ", Device_OS, " || N/A"))
+| extend MFA = tostring(MfaDetail_Dynamic.authMethod)
+| extend MFA_Status = iff(AuthenticationRequirement != "singleFactorAuthentication", strcat_delim(" , ", AuthenticationRequirement, MFA), "singleFactorAuthentication")
+| join kind=leftouter (USERINFO) on $left.UPN_lower == $right.Account_lower
+| order by TimeGenerated desc
+| project TimeGenerated, UserPrincipalName, IPAddress, Location, Autentication, DeviceProperties, MFA_Status, AppDisplayName, UserAgent, ResourceDisplayName, ClientAppUsed, JobTitle, Department, IsAccountEnabled

@@ -4,7 +4,7 @@ Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
 $ApiKey = "" # <==================== Add your API key from Virus Total
-$WindowTitle = "VirusTotal - IP, Domain, Hash or URL"
+$WindowTitle = "IOC Reputation Checker - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 
 function Get-InputType($query) {
