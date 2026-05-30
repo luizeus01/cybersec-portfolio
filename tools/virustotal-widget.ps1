@@ -35,7 +35,7 @@ function Check-VT($query) {
         return @{ Success = $false; Error = "Invalid input. Enter a valid IP, domain, hash, or URL." }
     }
 
-    if ($type -eq "urls") {
+    if ($type -eq "urls") { # VirusTotal requires URLs to be Base64 URL-safe encoded
         $bytes = [System.Text.Encoding]::UTF8.GetBytes($query)
         $encoded = [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','-').Replace('/','_')
         $url = "https://www.virustotal.com/api/v3/urls/$encoded"
@@ -64,7 +64,7 @@ function Check-VT($query) {
             Suspicious = $stats.suspicious
             Link       = $link
         }
-    } catch {
+    } catch { # Maps VirusTotal API responses to user-friendly messages
         $errorMsg = $_.Exception.Message
         if ($errorMsg -match "403") { $msg = "Error 403: Invalid API Key." }
         elseif ($errorMsg -match "404") { $msg = "Error 404: Not found." }
@@ -191,6 +191,7 @@ $CheckButton.Add_Click({
         return
     }
 
+    # Basic input sanitization to prevent unsafe payloads
     if ($query -match '[<>\"]' -or $query -match '(?i)javascript:') {
         $ResultLabel.Text = "Potentially unsafe input detected."
         $ResultLabel.Foreground = "Yellow"
