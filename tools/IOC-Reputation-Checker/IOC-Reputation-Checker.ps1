@@ -29,7 +29,7 @@ function Get-InputType($query) {
     }
 }
 
-function Check-VT($query) {
+function Get-VTReputation($query) {
     $type = Get-InputType $query
     if (-not $type) {
         return @{ Success = $false; Error = "Invalid input. Enter a valid IP, domain, hash, or URL." }
@@ -203,7 +203,7 @@ $CheckButton.Add_Click({
     $ResultLabel.Dispatcher.Invoke("Render", [action]{})
 
     Start-Sleep -Milliseconds 200
-    $data = Check-VT $query
+    $data = Get-VTReputation $query
 
     if ($data.Success) {
         $type = $data.Type
