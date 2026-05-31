@@ -90,8 +90,6 @@ Insert your VirusTotal API Key in the following variable:
 $ApiKey = ""
 ```
 
-For public repositories, it is recommended to store API keys outside the source code.
-
 ---
 
 ## Screenshots
