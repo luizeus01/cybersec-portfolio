@@ -1,0 +1,26 @@
+// Signin
+// KQL used to get sign-in from user and get some details from IdentityInfo Table
+let UPN = "";
+let USERINFO =
+    IdentityInfo
+    | where AccountUPN contains UPN
+    | extend Account_lower = tolower(AccountUPN)
+    | summarize arg_max(TimeGenerated, *) by Account_lower;
+SigninLogs
+| where TimeGenerated > ago(1d)
+| where UserPrincipalName contains UPN
+| where ResultType == 0
+| extend UPN_lower = tolower(UserPrincipalName)
+| extend Result_Auth_Status = iff(ResultType != 0, strcat_delim(" , ", ResultType, ResultSignature, ResultDescription), "Success")
+| extend Device_Name = tostring(DeviceDetail.displayName)
+| extend Device_OS = tostring(DeviceDetail.operatingSystem)
+| extend Device_ID = tostring(DeviceDetail.deviceId)
+| extend Device_Managed = tostring(DeviceDetail.trustType)
+| extend DeviceProperties = iff(Device_Name != "", strcat_delim(" , ", strcat("Host: ", Device_Name), Device_Managed, strcat("OS: ", Device_OS), strcat("ID: ", Device_ID)), strcat("OS: ", Device_OS, " || N/A"))
+| extend MFA = tostring(MfaDetail.authMethod)
+| extend MFA_Status = iff(AuthenticationRequirement != "singleFactorAuthentication", strcat_delim(" , ", AuthenticationRequirement, MFA), "singleFactorAuthentication")
+| mv-apply CA_Policy = ConditionalAccessPolicies on ( where tostring(CA_Policy.result) in~ ("success", "failure") | summarize CA_Policy = strcat_array(make_list(strcat(tostring(CA_Policy.displayName), " == ", tostring(CA_Policy.result))), " ||| ")) | extend CA_Policy = iff(isempty(CA_Policy), "N/A", CA_Policy)
+| extend ASN_IP_Address = strcat_delim(", ", strcat("ASN: ", AutonomousSystemNumber), strcat("IP: ", IPAddress))
+| join kind=leftouter (USERINFO) on $left.UPN_lower == $right.Account_lower
+| order by TimeGenerated desc
+| project TimeGenerated, UserPrincipalName, ASN_IP_Address, Location, DeviceProperties, Result_Auth_Status, MFA_Status, ConditionalAccessStatus, CA_Policy, AppDisplayName, ResourceDisplayName, ClientAppUsed, UserAgent, JobTitle, Department, IsAccountEnabled, RiskLevelAggregated, RiskLevelDuringSignIn, RiskState, RiskEventTypes, CorrelationId
