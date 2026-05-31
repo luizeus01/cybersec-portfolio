@@ -20,6 +20,18 @@ Currently supported integrations:
 
 ---
 
+## Screenshots
+
+### Main Window
+
+![Main Window](screenshots/main-window.png)
+
+### IOC Reputation Analysis
+
+![IOC Reputation](screenshots/ip-malicious.png)
+
+---
+
 ## Features
 
 ### IOC Detection
