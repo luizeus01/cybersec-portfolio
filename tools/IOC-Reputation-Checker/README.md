@@ -28,7 +28,9 @@ Currently supported integrations:
 
 ### IOC Reputation Analysis
 
-![IOC Reputation](screenshots/ip-malicious.png)
+![Check IP - Malicious](screenshots/ip-malicious.png)
+![Check Domain - Clean](screenshots/domain-lookup.png)
+![Check Hash - Malicious](screenshots/hash-lookup.png)
 
 ---
 
