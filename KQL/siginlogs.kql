@@ -19,7 +19,7 @@ SigninLogs
 | extend DeviceProperties = iff(Device_Name != "", strcat_delim(" , ", strcat("Host: ", Device_Name), Device_Managed, strcat("OS: ", Device_OS), strcat("ID: ", Device_ID)), strcat("OS: ", Device_OS, " || N/A"))
 | extend MFA = tostring(MfaDetail.authMethod)
 | extend MFA_Status = iff(AuthenticationRequirement != "singleFactorAuthentication", strcat_delim(" , ", AuthenticationRequirement, MFA), "singleFactorAuthentication")
-| mv-apply CA_Policy = ConditionalAccessPolicies on ( where tostring(CA_Policy.result) in~ ("success", "failure") | summarize CA_Policy = strcat_array(make_list(strcat(tostring(CA_Policy.displayName), " == ", tostring(CA_Policy.result))), " ||| ")) | extend CA_Policy = iff(isempty(CA_Policy), "N/A", CA_Policy)
+| mv-apply Policy_Item = ConditionalAccessPolicies on ( where tostring(Policy_Item.result) in~ ("success", "failure") | summarize CA_Policy = strcat_array(make_list(strcat(tostring(Policy_Item.displayName), " == ", tostring(Policy_Item.result))), " ||| ")) | extend CA_Policy = iff(isempty(CA_Policy), "N/A", CA_Policy)
 | extend ASN_IP_Address = strcat_delim(", ", strcat("ASN: ", AutonomousSystemNumber), strcat("IP: ", IPAddress))
 | join kind=leftouter (USERINFO) on $left.UPN_lower == $right.Account_lower
 | order by TimeGenerated desc
