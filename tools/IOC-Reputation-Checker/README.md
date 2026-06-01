@@ -112,12 +112,6 @@ $ApiKey = ""
 
 ---
 
-## Screenshots
-
-Screenshots will be added in future releases.
-
----
-
 ## Future Improvements
 
 Planned enhancements include:
