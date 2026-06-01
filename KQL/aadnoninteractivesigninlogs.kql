@@ -11,7 +11,7 @@ AADNonInteractiveUserSignInLogs
 | where UserPrincipalName contains UPN
 | where ResultType == 0
 | extend UPN_lower = tolower(UserPrincipalName)
-| extend Autentication = iff(ResultType != 0, strcat_delim(" , ", ResultType, ResultSignature, ResultDescription), "Success")
+| extend Result_Auth_Status = iff(ResultType != 0, strcat_delim(" , ", ResultType, ResultSignature, ResultDescription), "Success")
 | extend DeviceDetail_Dynamic = todynamic(DeviceDetail)
 | extend MfaDetail_Dynamic = todynamic(MfaDetail)
 | extend Device_Name = tostring(DeviceDetail_Dynamic.displayName)
@@ -21,6 +21,9 @@ AADNonInteractiveUserSignInLogs
 | extend DeviceProperties = iff(Device_Name != "", strcat_delim(" , ", strcat("Host: ", Device_Name), Device_Managed, strcat("OS: ", Device_OS), strcat("ID: ", Device_ID)), strcat("OS: ", Device_OS, " || N/A"))
 | extend MFA = tostring(MfaDetail_Dynamic.authMethod)
 | extend MFA_Status = iff(AuthenticationRequirement != "singleFactorAuthentication", strcat_delim(" , ", AuthenticationRequirement, MFA), "singleFactorAuthentication")
+| extend ConditionalAccessPolicies_Dynamic = todynamic(ConditionalAccessPolicies)
+| mv-apply Policy_Item = ConditionalAccessPolicies_Dynamic on (where tostring(Policy_Item.result) in~ ("success","failure") | summarize CA_Policy = strcat_array(make_list(strcat(tostring(Policy_Item.displayName), " == ", tostring(Policy_Item.result))), " ||| ")) | extend CA_Policy = iff(isempty(CA_Policy), "N/A", CA_Policy)
+| extend ASN_IP_Address = strcat_delim(", ", strcat("ASN: ", AutonomousSystemNumber), strcat("IP: ", IPAddress))
 | join kind=leftouter (USERINFO) on $left.UPN_lower == $right.Account_lower
 | order by TimeGenerated desc
-| project TimeGenerated, UserPrincipalName, IPAddress, Location, Autentication, DeviceProperties, MFA_Status, AppDisplayName, UserAgent, ResourceDisplayName, ClientAppUsed, JobTitle, Department, IsAccountEnabled
+| project TimeGenerated, UserPrincipalName, ASN_IP_Address, Location, DeviceProperties, Result_Auth_Status, MFA_Status, ConditionalAccessStatus, CA_Policy, AppDisplayName, ResourceDisplayName, ClientAppUsed, UserAgent, JobTitle, Department, IsAccountEnabled, RiskLevelAggregated, RiskLevelDuringSignIn, RiskState, RiskEventTypes, CorrelationId
