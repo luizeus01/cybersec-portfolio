@@ -1,3 +1,12 @@
+<#
+=========================================================
+ IOC-Reputation-Checker
+ Threat Intelligence Lookup Utility
+
+ Author   : Luiz Gustavo
+ GitHub   : https://github.com/luizeus01/cybersec-portfolio
+ =========================================================
+#>
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
