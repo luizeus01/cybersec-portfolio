@@ -46,4 +46,11 @@ Current examples:
 * PowerShell
 * WPF
 
+## Author
+
+Luiz Gustavo
+
+LinkedIn: https://linkedin.com/in/luiz-gustavo-lz
+
+
 More content will be added over time.
