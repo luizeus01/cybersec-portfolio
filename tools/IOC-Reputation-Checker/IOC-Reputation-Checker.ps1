@@ -150,7 +150,7 @@ $InputBox.Background = "Transparent"
 $InputBox.Foreground = "White"
 $InputBox.BorderThickness = 0
 $TextBorder.Child = $InputBox
-$Grid.Children.Add($TextBorder)
+[void]$Grid.Children.Add($TextBorder)
 
 $TextBorder.BorderThickness = 1
 $TextBorder.BorderBrush = "#2E2E2E"
@@ -160,32 +160,32 @@ $InputBox.Add_GotFocus({ $TextBorder.BorderBrush = "#e7e8e9ff"; $InputBox.Backgr
 $InputBox.Add_LostFocus({ $TextBorder.BorderBrush = "#2E2E2E"; $InputBox.Background = "Transparent" })
 
 $CheckButton = New-RoundedButton "Check" "20,70,20,0"
-$Grid.Children.Add($CheckButton)
+[void]$Grid.Children.Add($CheckButton)
 
 $ResultLabel = New-Object System.Windows.Controls.TextBlock
 $ResultLabel.Margin = "20,130,20,20"
 $ResultLabel.TextWrapping = "Wrap"
 $ResultLabel.FontSize = 14
-$Grid.Children.Add($ResultLabel)
+[void]$Grid.Children.Add($ResultLabel)
 
 $ButtonPanel = New-Object System.Windows.Controls.StackPanel
 $ButtonPanel.Orientation = "Horizontal"
 $ButtonPanel.Margin = "20,240,20,0"
-$Grid.Children.Add($ButtonPanel)
+[void]$Grid.Children.Add($ButtonPanel)
 
 $VTButton = New-RoundedButton "Open in VirusTotal" "0,0,5,0"
 $VTButton.Width = 350
 $VTButton.FontSize = 14
 $VTButton.Background = "#444"
 $VTButton.Visibility = "Collapsed"
-$ButtonPanel.Children.Add($VTButton)
+[void]$ButtonPanel.Children.Add($VTButton)
 
 $AbuseButton = New-RoundedButton "Open in AbuseIPDB" "5,0,0,0"
 $AbuseButton.Width = 170
 $AbuseButton.FontSize = 14
 $AbuseButton.Background = "#444"
 $AbuseButton.Visibility = "Collapsed"
-$ButtonPanel.Children.Add($AbuseButton)
+[void]$ButtonPanel.Children.Add($AbuseButton)
 
 $NoticeLabel = New-Object System.Windows.Controls.TextBlock
 $NoticeLabel.Margin = "20,300,20,5"
@@ -193,7 +193,7 @@ $NoticeLabel.FontSize = 11
 $NoticeLabel.Foreground = "Gray"
 $NoticeLabel.Text = "$([char]0x26A0) This tool never loads or executes URLs. VirusTotal API only."
 $NoticeLabel.TextWrapping = "Wrap"
-$Grid.Children.Add($NoticeLabel)
+[void]$Grid.Children.Add($NoticeLabel)
 
 $CheckButton.Add_Click({
     $query = $InputBox.Text.Trim()
