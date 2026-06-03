@@ -17,25 +17,32 @@ $WindowTitle = "IOC Reputation Checker - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 
 function Get-InputType($query) {
-    if ($query -match '^(?:\d{1,3}\.){3}\d{1,3}$') {
+
+    $ipObj = $null
+
+    if ([System.Net.IPAddress]::TryParse($query, [ref]$ipObj)) {
         return "ip_addresses"
-    } elseif ($query -match '^(([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}|([0-9A-Fa-f]{1,4}:){1,7}:|([0-9A-Fa-f]{1,4}:){1,6}:[0-9A-Fa-f]{1,4}|([0-9A-Fa-f]{1,4}:){1,5}(:[0-9A-Fa-f]{1,4}){1,2}|([0-9A-Fa-f]{1,4}:){1,4}(:[0-9A-Fa-f]{1,4}){1,3}|([0-9A-Fa-f]{1,4}:){1,3}(:[0-9A-Fa-f]{1,4}){1,4}|([0-9A-Fa-f]{1,4}:){1,2}(:[0-9A-Fa-f]{1,4}){1,5}|[0-9A-Fa-f]{1,4}:((:[0-9A-Fa-f]{1,4}){1,6})|:((:[0-9A-Fa-f]{1,4}){1,7}|:))$') {
-        return "ip_addresses"
-    } elseif ($query -match '^(https?|ftp)://') {
-        return "urls"
-    } elseif ($query -match '^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}([/?].+)$') {
-        return "urls"
-    } elseif ($query -match '^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') {
-        return "domains"
-    } elseif ($query -match '^[a-fA-F0-9]{32}$') {
-        return "files"
-    } elseif ($query -match '^[a-fA-F0-9]{40}$') {
-        return "files"
-    } elseif ($query -match '^[a-fA-F0-9]{64}$') {
-        return "files"
-    } else {
-        return $null
     }
+    elseif ($query -match '^(https?|ftp)://') {
+        return "urls"
+    }
+    elseif ($query -match '^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}([/?].+)$') {
+        return "urls"
+    }
+    elseif ($query -match '^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') {
+        return "domains"
+    }
+    elseif ($query -match '^[a-fA-F0-9]{32}$') {
+        return "files"
+    }
+    elseif ($query -match '^[a-fA-F0-9]{40}$') {
+        return "files"
+    }
+    elseif ($query -match '^[a-fA-F0-9]{64}$') {
+        return "files"
+    }
+
+    return $null
 }
 
 function Get-VTReputation($query) {
