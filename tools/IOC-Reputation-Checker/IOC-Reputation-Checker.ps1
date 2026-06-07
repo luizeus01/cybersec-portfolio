@@ -49,6 +49,7 @@ function Get-InputType($query) {
 function Get-VTReputation($query) {
     $type = Get-InputType $query
     if (-not $type) {
+        
         return @{ Success = $false; Error = "Invalid input. Enter a valid IP, domain, hash, or URL." }
     }
 
@@ -71,6 +72,7 @@ function Get-VTReputation($query) {
     try {
         $headers = @{ "x-apikey" = $ApiKey }
         $response = Invoke-RestMethod -Uri $url -Headers $headers -Method Get -ErrorAction Stop
+        $attributes = $response.data.attributes
         $stats = $response.data.attributes.last_analysis_stats
 
         return @{
@@ -79,6 +81,9 @@ function Get-VTReputation($query) {
             Harmless   = $stats.harmless
             Malicious  = $stats.malicious
             Suspicious = $stats.suspicious
+            Owner      = $attributes.as_owner
+            ASN        = $attributes.asn
+            Country    = $attributes.country
             Link       = $link
         }
     } catch { # Maps VirusTotal API responses to user-friendly messages
@@ -169,6 +174,13 @@ $ResultLabel.TextWrapping = "Wrap"
 $ResultLabel.FontSize = 14
 [void]$Grid.Children.Add($ResultLabel)
 
+$IPDetailsLabel = New-Object System.Windows.Controls.TextBlock
+$IPDetailsLabel.Margin = "200,130,20,20"
+$IPDetailsLabel.TextWrapping = "Wrap"
+$IPDetailsLabel.FontSize = 14
+$IPDetailsLabel.Text = ""
+[void]$Grid.Children.Add($IPDetailsLabel)
+
 $ButtonPanel = New-Object System.Windows.Controls.StackPanel
 $ButtonPanel.Orientation = "Horizontal"
 $ButtonPanel.Margin = "20,240,20,0"
@@ -201,6 +213,7 @@ $CheckButton.Add_Click({
     $VTButton.Visibility = "Collapsed"
     $AbuseButton.Visibility = "Collapsed"
     $VTButton.Width = 350
+    $IPDetailsLabel.Text = ""
 
     if ([string]::IsNullOrWhiteSpace($query)) {
         $ResultLabel.Text = "Please enter a valid IP, domain, hash, or URL."
@@ -228,10 +241,21 @@ $CheckButton.Add_Click({
 
         if ($data.Malicious -gt 0) {
             $ResultLabel.Foreground = "Red"
+            $IPDetailsLabel.Foreground = "Red"
         } elseif ($data.Suspicious -gt 0) {
             $ResultLabel.Foreground = "Orange"
+            $IPDetailsLabel.Foreground = "Orange"
         } else {
             $ResultLabel.Foreground = "Green"
+            $IPDetailsLabel.Foreground = "Green"
+        }
+
+        if ($type -eq "ip_addresses"){
+            $ownerValue = if ($data.Owner) {$data.Owner} else {"N/A"}
+            $asnValue = if ($data.ASN) {$data.ASN} else {"N/A"}
+            $countryValue = if ($data.Country) {$data.Country} else {"N/A"}
+
+            $IPDetailsLabel.Text = "Owner: $ownerValue`nASN: $asnValue`nCountry: $countryValue"
         }
 
         if ($type -eq "ip_addresses" -or $type -eq "domains") {
