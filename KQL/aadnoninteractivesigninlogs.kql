@@ -27,4 +27,4 @@ AADNonInteractiveUserSignInLogs
 | extend Token_Properties = strcat_delim(", ", strcat("Issuer: ", TokenIssuerType), strcat("TokenType: ", IncomingTokenType))
 | join kind=leftouter (USERINFO) on $left.UPN_lower == $right.Account_lower
 | order by TimeGenerated desc
-| project TimeGenerated, UserPrincipalName, Token_Properties, CorrelationId, ASN_IP_Address, Location, DeviceProperties, Result_Auth_Status, MFA_Status, ConditionalAccessStatus, CA_Policy, AppDisplayName, ResourceDisplayName, ClientAppUsed, UserAgent, JobTitle, Department, IsAccountEnabled, RiskLevelAggregated, RiskLevelDuringSignIn, RiskState, RiskEventTypes
+| project TimeGenerated, UserPrincipalName, Token_Properties, SessionId, CorrelationId, UniqueTokenIdentifier, ASN_IP_Address, Location, DeviceProperties, Result_Auth_Status, MFA_Status, ConditionalAccessStatus, CA_Policy, AppDisplayName, ResourceDisplayName, ClientAppUsed, UserAgent, JobTitle, Department, IsAccountEnabled, RiskLevelAggregated, RiskLevelDuringSignIn, RiskState, RiskEventTypes
