@@ -20,6 +20,23 @@ Currently supported integrations:
 
 ---
 
+## Changelog
+
+### v1.3 (2026-06-15)
+- Added Domain Enrichment
+  - Registrar
+  - Creation Date
+  - Reputation
+
+### v1.2 (2026-06-07)
+- Added IP Enrichment
+  - Owner
+  - ASN
+  - Country
+- Added Dynamic Severity Coloring
+
+---
+
 ## Screenshots
 
 ### Main Window
