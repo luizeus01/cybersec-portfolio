@@ -17,7 +17,7 @@ Add-Type -AssemblyName WindowsBase
 
 $AppVersion = "v1.3"
 $ApiKey = "" # <==================== Add your API key from Virus Total
-$WindowTitle = "IOC Reputation Checker  $AppVersion - IP, Domain, URL, Hash"
+$WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 
 function Get-InputType($query) {
@@ -50,7 +50,16 @@ function Get-InputType($query) {
 }
 
 function Get-VTReputation($query) {
+    
+    if ([string]::IsNullOrWhiteSpace($ApiKey)) {
+    return @{
+        Success = $false
+        Error = "VirusTotal API Key not configured. Please set the `$ApiKey variable."
+        }
+    }
+
     $type = Get-InputType $query
+
     if (-not $type) {
         
         return @{ Success = $false; Error = "Invalid input. Enter a valid IP, domain, hash, or URL." }
