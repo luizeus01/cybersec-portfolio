@@ -33,7 +33,6 @@ Currently supported integrations:
   - Owner
   - ASN
   - Country
-- Added Dynamic Severity Coloring
 
 ---
 
