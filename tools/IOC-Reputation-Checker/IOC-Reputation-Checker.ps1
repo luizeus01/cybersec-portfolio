@@ -2,6 +2,8 @@
 =========================================================
  IOC-Reputation-Checker
  Threat Intelligence Lookup Utility
+ Version  : v1.3
+ Updated  : 2026-06-15
 
  Author   : Luiz Gustavo
  Project Repository: https://github.com/luizeus01/cybersec-portfolio/tree/dev/tools/IOC-Reputation-Checker
@@ -13,8 +15,9 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
+$AppVersion = "v1.3"
 $ApiKey = "" # <==================== Add your API key from Virus Total
-$WindowTitle = "IOC Reputation Checker - IP, Domain, URL, Hash"
+$WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 
 function Get-InputType($query) {
@@ -47,7 +50,16 @@ function Get-InputType($query) {
 }
 
 function Get-VTReputation($query) {
+    
+    if ([string]::IsNullOrWhiteSpace($ApiKey)) {
+    return @{
+        Success = $false
+        Error = "VirusTotal API Key not configured. Please set the `$ApiKey variable."
+        }
+    }
+
     $type = Get-InputType $query
+
     if (-not $type) {
         
         return @{ Success = $false; Error = "Invalid input. Enter a valid IP, domain, hash, or URL." }
@@ -76,6 +88,7 @@ function Get-VTReputation($query) {
         $stats = $response.data.attributes.last_analysis_stats
 
         return @{
+            # IP return
             Success    = $true
             Type       = $type
             Harmless   = $stats.harmless
@@ -85,6 +98,11 @@ function Get-VTReputation($query) {
             ASN        = $attributes.asn
             Country    = $attributes.country
             Link       = $link
+
+            # DOMAIN return
+            Registrar  = $attributes.registrar
+            Created    = $attributes.creation_date
+            Reputation = $attributes.reputation
         }
     } catch { # Maps VirusTotal API responses to user-friendly messages
         $errorMsg = $_.Exception.Message
@@ -250,12 +268,24 @@ $CheckButton.Add_Click({
             $IPDetailsLabel.Foreground = "Green"
         }
 
-        if ($type -eq "ip_addresses"){
-            $ownerValue = if ($data.Owner) {$data.Owner} else {"N/A"}
-            $asnValue = if ($data.ASN) {$data.ASN} else {"N/A"}
-            $countryValue = if ($data.Country) {$data.Country} else {"N/A"}
+        if ($type -eq "ip_addresses") {
+            $ownerValue = if ($data.Owner) { $data.Owner } else { "N/A" }
+            $asnValue = if ($data.ASN) { $data.ASN } else { "N/A" }
+            $countryValue = if ($data.Country) { $data.Country } else { "N/A" }
 
             $IPDetailsLabel.Text = "Owner: $ownerValue`nASN: $asnValue`nCountry: $countryValue"
+        }
+        elseif ($type -eq "domains") {
+            $registrarValue = if ($data.Registrar) { $data.Registrar } else { "N/A" }
+            $reputationValue = if ($null -ne $data.Reputation) { $data.Reputation } else { "N/A" }
+
+            $createdValue = if ($data.Created) {
+                [DateTimeOffset]::FromUnixTimeSeconds($data.Created).DateTime.ToString("yyyy-MM-dd")
+            } else {
+                "N/A"
+            }
+
+            $IPDetailsLabel.Text = "Registrar: $registrarValue`nCreated: $createdValue`nReputation: $reputationValue"
         }
 
         if ($type -eq "ip_addresses" -or $type -eq "domains") {
