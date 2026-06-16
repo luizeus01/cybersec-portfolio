@@ -2,7 +2,7 @@
 =========================================================
  IOC-Reputation-Checker
  Threat Intelligence Lookup Utility
- Version  : v1.4
+ Version  : v1.5
  Updated  : 2026-06-16
 
  Author   : Luiz Gustavo
@@ -15,7 +15,7 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
-$AppVersion = "v1.4"
+$AppVersion = "v1.5"
 $ApiKey = "" # <==================== Add your API key from Virus Total
 $WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
