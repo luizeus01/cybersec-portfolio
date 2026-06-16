@@ -258,11 +258,12 @@ $CheckButton.Add_Click({
     Start-Sleep -Milliseconds 200
     $data = Get-VTReputation $query
 
-    if ($data.Success) {
+    #Truncate long IOC name to preserve layout
+    if ($data.Success) { 
         $type = $data.Type
         
         $displayIOC = if ($query.Length -gt 28) {
-            "$($query.Substring(0, 14))...$($query.Substring($query.Length - 10))"
+            "$($query.Substring(0, 9))...$($query.Substring($query.Length - 10))"
         } else {
             $query
         }
@@ -299,8 +300,14 @@ $CheckButton.Add_Click({
 
             $IPDetailsLabel.Text = "Registrar: $registrarValue`nCreated: $createdValue`nReputation: $reputationValue"
         }
+        #Truncate long File Name to preserve layout
         elseif ($type -eq "files") {
             $fileNameValue = if ($data.FileName) { $data.FileName } else { "N/A" }
+
+            if ($fileNameValue.Length -gt 30) {
+                $fileNameValue = "$($fileNameValue.Substring(0,15))...$($fileNameValue.Substring($fileNameValue.Length - 10))"
+            }
+
             $fileTypeValue = if ($data.FileType) { $data.FileType } else { "N/A" }
 
             $fileSizeValue = if ($data.FileSize) {
