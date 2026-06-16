@@ -22,6 +22,13 @@ Currently supported integrations:
 
 ## Changelog
 
+### v1.4 (2026-06-16)
+- Added Hash Enrichment
+  - File Name
+  - File Type
+  - File Size
+- UI improvements: Truncated long IOC values for better readability
+
 ### v1.3 (2026-06-15)
 - Added Domain Enrichment
   - Registrar
