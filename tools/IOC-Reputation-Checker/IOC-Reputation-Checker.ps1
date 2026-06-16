@@ -2,8 +2,8 @@
 =========================================================
  IOC-Reputation-Checker
  Threat Intelligence Lookup Utility
- Version  : v1.3
- Updated  : 2026-06-15
+ Version  : v1.4
+ Updated  : 2026-06-16
 
  Author   : Luiz Gustavo
  Project Repository: https://github.com/luizeus01/cybersec-portfolio/tree/dev/tools/IOC-Reputation-Checker
@@ -103,6 +103,11 @@ function Get-VTReputation($query) {
             Registrar  = $attributes.registrar
             Created    = $attributes.creation_date
             Reputation = $attributes.reputation
+
+            # FILE return
+            FileName   = $attributes.meaningful_name
+            FileType   = $attributes.type_description
+            FileSize   = $attributes.size
         }
     } catch { # Maps VirusTotal API responses to user-friendly messages
         $errorMsg = $_.Exception.Message
@@ -255,7 +260,14 @@ $CheckButton.Add_Click({
 
     if ($data.Success) {
         $type = $data.Type
-        $ResultLabel.Text = "Type: $($data.Type)`nHarmless: $($data.Harmless)`nMalicious: $($data.Malicious)`nSuspicious: $($data.Suspicious)`nSEARCH: $query"
+        
+        $displayIOC = if ($query.Length -gt 28) {
+            "$($query.Substring(0, 14))...$($query.Substring($query.Length - 10))"
+        } else {
+            $query
+        }
+        
+        $ResultLabel.Text = "Type: $($data.Type)`nHarmless: $($data.Harmless)`nMalicious: $($data.Malicious)`nSuspicious: $($data.Suspicious)`nIOC: $displayIOC"
 
         if ($data.Malicious -gt 0) {
             $ResultLabel.Foreground = "Red"
@@ -286,6 +298,26 @@ $CheckButton.Add_Click({
             }
 
             $IPDetailsLabel.Text = "Registrar: $registrarValue`nCreated: $createdValue`nReputation: $reputationValue"
+        }
+        elseif ($type -eq "files") {
+            $fileNameValue = if ($data.FileName) { $data.FileName } else { "N/A" }
+            $fileTypeValue = if ($data.FileType) { $data.FileType } else { "N/A" }
+
+            $fileSizeValue = if ($data.FileSize) {
+                if ($data.FileSize -ge 1MB) {
+                    "{0:N2} MB" -f ($data.FileSize / 1MB)
+                }
+                elseif ($data.FileSize -ge 1KB) {
+                    "{0:N2} KB" -f ($data.FileSize / 1KB)
+                }
+                else {
+                    "$($data.FileSize) bytes"
+                }
+            } else {
+                "N/A"
+            }
+
+            $IPDetailsLabel.Text = "File Name: $fileNameValue`nFile Type: $fileTypeValue`nFile Size: $fileSizeValue"
         }
 
         if ($type -eq "ip_addresses" -or $type -eq "domains") {
