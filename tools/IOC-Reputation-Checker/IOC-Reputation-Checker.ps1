@@ -15,7 +15,7 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
-$AppVersion = "v1.3"
+$AppVersion = "v1.4"
 $ApiKey = "" # <==================== Add your API key from Virus Total
 $WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
