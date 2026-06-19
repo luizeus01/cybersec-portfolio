@@ -1,3 +1,4 @@
+//Remember to change the datetime for you specific date and time :D
 let IdentityInfoDemo = datatable(
 TimeGenerated:datetime, AccountUPN:string, AccountDisplayName:string, Account_lower:string, JobTitle:string, Department:string, IsAccountEnabled:bool, Manager:string, Country:string, City:string, EmployeeId:string
 )

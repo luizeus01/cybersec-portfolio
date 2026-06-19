@@ -1,3 +1,4 @@
+//Remember to change the datetime for you specific date and time :D
 let SigninLogsDemo = datatable(
 TimeGenerated:datetime, UserPrincipalName:string, ResultType:int, ResultSignature:string, ResultDescription:string, IPAddress:string, AutonomousSystemNumber:int, Location:string, DeviceDetail:dynamic, MfaDetail:dynamic, AuthenticationRequirement:string, ConditionalAccessPolicies:dynamic, ConditionalAccessStatus:string, AppDisplayName:string, ResourceDisplayName:string, ClientAppUsed:string, UserAgent:string, RiskLevelAggregated:string, RiskLevelDuringSignIn:string, RiskState:string, RiskEventTypes:dynamic, CorrelationId:string, SessionId:string
 )
