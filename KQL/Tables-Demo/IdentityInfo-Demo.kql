@@ -1,0 +1,7 @@
+let IdentityInfoDemo = datatable(
+TimeGenerated:datetime, AccountUPN:string, AccountDisplayName:string, Account_lower:string, JobTitle:string, Department:string, IsAccountEnabled:bool, Manager:string, Country:string, City:string, EmployeeId:string
+)
+[
+datetime(2026-06-16 00:00:00), "john.smith@test-demo.com", "John Smith", "john.smith@test-demo.com", "Security Analyst", "Cybersecurity", true, "Michael Brown", "BR", "Sao Paulo", "EMP001",
+datetime(2026-06-16 00:00:00), "sarah.johnson@test-demo.com", "Sarah Johnson", "sarah.johnson@test-demo.com", "Cloud Administrator", "Infrastructure", true, "David Wilson", "BR", "Campinas", "EMP002"
+];
