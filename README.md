@@ -47,10 +47,12 @@ Current examples:
 * WPF
 
 ## Author
+### Connect with Me :)
 
 Luiz Gustavo
 
-LinkedIn: https://linkedin.com/in/luiz-gustavo-lz
+- LinkedIn: https://linkedin.com/in/luiz-gustavo-lz
+- YouTube: http://www.youtube.com/@LuizGustavoCyberSec
 
 
-More content will be added over time.
+More content will be added over time...
