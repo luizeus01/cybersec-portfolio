@@ -2,8 +2,8 @@
 =========================================================
  IOC-Reputation-Checker
  Threat Intelligence Lookup Utility
- Version  : v1.5
- Updated  : 2026-06-16
+ Version  : v1.6
+ Updated  : 2026-06-22
 
  Author   : Luiz Gustavo
  Project Repository: https://github.com/luizeus01/cybersec-portfolio/tree/dev/tools/IOC-Reputation-Checker
@@ -15,7 +15,7 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
-$AppVersion = "v1.5"
+$AppVersion = "v1.6"
 $ApiKey = "" # <==================== Add your API key from Virus Total
 $WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
@@ -154,18 +154,32 @@ function New-RoundedButton($content, $margin) {
     return $button
 }
 
+#  responsive interface of windows
+$DesignWidth = 410
+$DesignHeight = 360
+
 $Window = New-Object System.Windows.Window
 $Window.Title = $WindowTitle
-$Window.Width = 410
-$Window.Height = 360
+$Window.Width = $DesignWidth
+$Window.Height = $DesignHeight
+$Window.MinWidth = 280
+$Window.MinHeight = 240
 $Window.WindowStartupLocation = "CenterScreen"
 $Window.Background = $BackgroundColor
 $Window.Foreground = "White"
-$Window.ResizeMode = "NoResize"
+$Window.ResizeMode = "CanResizeWithGrip"
 $Window.Topmost = $true
 
+# Viewbox keeps the existing layout proportional when the window is resized
+$Viewbox = New-Object System.Windows.Controls.Viewbox
+$Viewbox.Stretch = "Uniform"
+$Viewbox.StretchDirection = "Both"
+$Window.Content = $Viewbox
+
 $Grid = New-Object System.Windows.Controls.Grid
-$Window.Content = $Grid
+$Grid.Width = $DesignWidth
+$Grid.Height = $DesignHeight
+$Viewbox.Child = $Grid
 
 $TextBorder = New-Object System.Windows.Controls.Border
 $TextBorder.CornerRadius = 6
@@ -177,6 +191,7 @@ $InputBox = New-Object System.Windows.Controls.TextBox
 $InputBox.FontSize = 16
 $InputBox.Background = "Transparent"
 $InputBox.Foreground = "White"
+$InputBox.CaretBrush = "White"
 $InputBox.BorderThickness = 0
 $TextBorder.Child = $InputBox
 [void]$Grid.Children.Add($TextBorder)
