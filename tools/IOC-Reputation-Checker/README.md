@@ -74,7 +74,7 @@ The idea behind the project was not to replace VirusTotal or AbuseIPDB, but rath
 
 ## Configuration
 
-Insert your VirusTotal API Key in the following variable and run the file "IOC-Reputation-Checker.ps1":
+Insert your VirusTotal API Key in the following variable, then SAVE and run the file "IOC-Reputation-Checker.ps1":
 
 ```powershell
 $ApiKey = ""
