@@ -72,6 +72,16 @@ The idea behind the project was not to replace VirusTotal or AbuseIPDB, but rath
 
 ---
 
+## Configuration
+
+Insert your VirusTotal API Key in the following variable and run the file "IOC-Reputation-Checker.ps1":
+
+```powershell
+$ApiKey = ""
+```
+
+---
+
 ## Screenshots
 
 ### Main Window
@@ -169,16 +179,6 @@ Automatically identifies the input type:
 * Windows
 * PowerShell 5.1 or later
 * VirusTotal API Key
-
----
-
-## Configuration
-
-Insert your VirusTotal API Key in the following variable:
-
-```powershell
-$ApiKey = ""
-```
 
 ---
 
