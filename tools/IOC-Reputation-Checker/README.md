@@ -18,9 +18,25 @@ Currently supported integrations:
 * VirusTotal
 * AbuseIPDB
 
----
+## Why I Built This Tool?
+
+SOC Analysts often need to perform repetitive reputation checks across multiple platforms.
+
+The idea behind the project was not to replace VirusTotal or AbuseIPDB, but rather to have a PowerShell tool that simplifies checking IOC reputations without the need to switch between tabs, thereby streamlining daily workflows.
 
 ## Changelog
+
+### v1.6 (2026-06-22)
+- Added Responsive UI
+- Added Resizable Window Support
+- Added Proportional UI Scaling using WPF Viewbox
+- Added Minimum Window Size Controls
+
+### v1.5 (2026-06-16)
+- Added VirusTotal API Key Validation
+- Added Long IOC Truncation
+- Added Long File Name Truncation
+- Improved Results Panel Readability
 
 ### v1.4 (2026-06-16)
 - Added Hash Enrichment
@@ -83,6 +99,23 @@ Automatically identifies the input type:
 * AbuseIPDB reputation lookup
 * Direct access to investigation portals
 
+### Intelligence Enrichment
+
+#### IP Intelligence
+* Owner
+* ASN
+* Country
+
+#### Domain Intelligence
+* Registrar
+* Creation Date
+* Reputation
+
+#### File Intelligence
+* File Name
+* File Type
+* File Size
+
 ### Security Controls
 
 * Basic input sanitization
@@ -96,6 +129,7 @@ Automatically identifies the input type:
 * Quick investigation workflow
 * Keyboard support (Enter key)
 * Visual severity indicators
+* IOC-Specific Intelligence Panels
 
 ---
 
@@ -139,11 +173,8 @@ $ApiKey = ""
 
 Planned enhancements include:
 
-* Additional Threat Intelligence providers
-* IP geolocation enrichment (Country)
 * VPN / Proxy identification
-* Improved input validation
-* Enhanced error handling
+* Enhanced URL Recognition
 * UI improvements
 
 ---
