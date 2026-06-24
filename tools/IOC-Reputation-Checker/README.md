@@ -2,6 +2,19 @@
 
 PowerShell-based widget designed to simplify IOC reputation analysis by integrating multiple threat intelligence sources into a lightweight and easy-to-use interface.
 
+## Current Version
+
+**Version:** v1.6 | **Status:** Active Development
+
+Key Features:
+- IP Intelligence (Owner, ASN, Country)
+- Domain Intelligence (Registrar, Creation Date, Reputation)
+- File Intelligence (File Name, File Type, File Size)
+- Responsive and Resizable UI
+- VirusTotal & AbuseIPDB Integration
+
+![IOC-Reputation-Checker Demo](screenshots/IOC-Reputation-Checker.gif)
+
 ## Overview
 
 Security analysts frequently need to investigate indicators such as:
