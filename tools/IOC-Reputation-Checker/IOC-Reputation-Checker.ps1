@@ -17,7 +17,7 @@ Add-Type -AssemblyName WindowsBase
 
 $AppVersion = "v1.7"
 $VirusTotalApiKey = "" # <==================== Add your API key from Virus Total
-$VpnApiKey = ""
+$VpnApiKey = "" # <==================== Add your API key from VPNAPI.IO
 $WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 

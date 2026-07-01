@@ -4,7 +4,7 @@ PowerShell-based widget designed to simplify IOC reputation analysis by integrat
 
 ## Current Version
 
-**Version:** v1.6 | **Status:** Active Development
+**Version:** v1.7 | **Status:** Active Development
 
 Key Features:
 - IP Intelligence (Owner, ASN, Country)
