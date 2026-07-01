@@ -39,6 +39,10 @@ The idea behind the project was not to replace VirusTotal or AbuseIPDB, but rath
 
 ## Changelog
 
+### v1.7 (2026-07-01)
+- Added IP privacy detection using vpnapi.io
+- Added VPN / Proxy / Tor / Relay identification for IP lookups
+
 ### v1.6 (2026-06-22)
 - Added Responsive UI
 - Added Resizable Window Support
