@@ -2,8 +2,8 @@
 =========================================================
  IOC-Reputation-Checker
  Threat Intelligence Lookup Utility
- Version  : v1.6
- Updated  : 2026-06-22
+ Version  : v1.7
+ Updated  : 2026-07-01
 
  Author   : Luiz Gustavo
  Project Repository: https://github.com/luizeus01/cybersec-portfolio/tree/dev/tools/IOC-Reputation-Checker
@@ -15,8 +15,9 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
-$AppVersion = "v1.6"
-$ApiKey = "" # <==================== Add your API key from Virus Total
+$AppVersion = "v1.7"
+$VirusTotalApiKey = "" # <==================== Add your API key from Virus Total
+$VpnApiKey = ""
 $WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 
@@ -51,10 +52,10 @@ function Get-InputType($query) {
 
 function Get-VTReputation($query) {
     
-    if ([string]::IsNullOrWhiteSpace($ApiKey)) {
+    if ([string]::IsNullOrWhiteSpace($VirusTotalApiKey)) {
     return @{
         Success = $false
-        Error = "VirusTotal API Key not configured. Please set the `$ApiKey variable."
+        Error = "VirusTotal API Key not configured. Please set the `$VirusTotalApiKey variable."
         }
     }
 
@@ -82,7 +83,7 @@ function Get-VTReputation($query) {
     }
 
     try {
-        $headers = @{ "x-apikey" = $ApiKey }
+        $headers = @{ "x-apikey" = $VirusTotalApiKey }
         $response = Invoke-RestMethod -Uri $url -Headers $headers -Method Get -ErrorAction Stop
         $attributes = $response.data.attributes
         $stats = $response.data.attributes.last_analysis_stats
@@ -120,6 +121,59 @@ function Get-VTReputation($query) {
         return @{ Success = $false; Error = $msg }
     }
 }
+
+
+function Get-IPPrivacyStatus($ip) {
+
+    if ([string]::IsNullOrWhiteSpace($VpnApiKey)) {
+        return @{
+            Success = $false
+            Status  = "N/A"
+        }
+    }
+
+    try {
+        $url = "https://vpnapi.io/api/$ip`?key=$VpnApiKey"
+        $response = Invoke-RestMethod -Uri $url -Method Get -ErrorAction Stop
+
+        $security = $response.security
+        $flags = @()
+
+        if ([System.Convert]::ToBoolean($security.vpn)) {
+            $flags += "VPN"
+        }
+
+        if ([System.Convert]::ToBoolean($security.proxy)) {
+            $flags += "Proxy"
+        }
+
+        if ([System.Convert]::ToBoolean($security.tor)) {
+            $flags += "Tor"
+        }
+
+        if ([System.Convert]::ToBoolean($security.relay)) {
+            $flags += "Relay"
+        }
+
+        $status = if ($flags.Count -gt 0) {
+            $flags -join "/"
+        } else {
+            "No"
+        }
+
+        return @{
+            Success = $true
+            Status  = $status
+        }
+    }
+    catch {
+        return @{
+            Success = $false
+            Status  = "N/A"
+        }
+    }
+}
+
 
 function New-RoundedButton($content, $margin) {
     $button = New-Object System.Windows.Controls.Button
@@ -242,7 +296,7 @@ $NoticeLabel = New-Object System.Windows.Controls.TextBlock
 $NoticeLabel.Margin = "20,300,20,5"
 $NoticeLabel.FontSize = 11
 $NoticeLabel.Foreground = "Gray"
-$NoticeLabel.Text = "$([char]0x26A0) This tool never loads or executes URLs. VirusTotal API only."
+$NoticeLabel.Text = "$([char]0x26A0) This tool never loads or executes URLs. API lookups only."
 $NoticeLabel.TextWrapping = "Wrap"
 [void]$Grid.Children.Add($NoticeLabel)
 
@@ -301,7 +355,10 @@ $CheckButton.Add_Click({
             $asnValue = if ($data.ASN) { $data.ASN } else { "N/A" }
             $countryValue = if ($data.Country) { $data.Country } else { "N/A" }
 
-            $IPDetailsLabel.Text = "Owner: $ownerValue`nASN: $asnValue`nCountry: $countryValue"
+            $privacyResult = Get-IPPrivacyStatus $query
+            $privacyValue = $privacyResult.Status
+
+            $IPDetailsLabel.Text = "Owner: $ownerValue`nASN: $asnValue`nCountry: $countryValue`nVPN/Proxy/Tor: $privacyValue"
         }
         elseif ($type -eq "domains") {
             $registrarValue = if ($data.Registrar) { $data.Registrar } else { "N/A" }
@@ -315,6 +372,7 @@ $CheckButton.Add_Click({
 
             $IPDetailsLabel.Text = "Registrar: $registrarValue`nCreated: $createdValue`nReputation: $reputationValue"
         }
+        
         #Truncate long File Name to preserve layout
         elseif ($type -eq "files") {
             $fileNameValue = if ($data.FileName) { $data.FileName } else { "N/A" }
