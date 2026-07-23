@@ -16,8 +16,8 @@ Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
 $AppVersion = "v1.7"
-$VirusTotalApiKey = "" # <==================== Add your API key from Virus Total
-$VpnApiKey = "" # <==================== Add your API key from VPNAPI.IO
+$VirusTotalApiKey = "" # <==================== Add your API key from Virus Total -------- https://www.virustotal.com/gui/join-us
+$VpnApiKey = "" # <==================== Add your API key from VPNAPI.IO -------- https://vpnapi.io/signup
 $WindowTitle = "IOC Reputation Checker $AppVersion - IP, Domain, URL, Hash"
 $BackgroundColor = "#1E1E1E"
 
