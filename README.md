@@ -37,7 +37,7 @@ Main features:
 - Timestamped CSV report with reputation and error details
 - Graphical file selection and export dialogs
 
-## KQL Queries
+## [KQL Queries](https://github.com/luizeus01/cybersec-portfolio/tree/master/KQL)
 
 A collection of Microsoft Sentinel and Defender hunting queries focused on:
 
@@ -51,11 +51,26 @@ Current examples:
 - `SigninLogs`
 - `AADNonInteractiveUserSignInLogs`
 
+### [Demo Tables](https://github.com/luizeus01/cybersec-portfolio/tree/master/KQL/Tables-Demo)
+
+Reusable KQL datasets created for hands-on labs, query testing, and Microsoft Sentinel demonstrations.
+
+Available datasets include:
+
+- Identity information
+- Interactive sign-in events
+- Non-interactive sign-in events
+- Authentication and location scenarios
+
+All users, domains, IP addresses, and events are fictional and intended exclusively for demonstration purposes.
+These datasets use fictional users and simulated events, allowing the queries to be tested without exposing real organizational data.
+
 ## Technologies
 
 - Microsoft Sentinel
 - Microsoft Defender XDR
 - Kusto Query Language (KQL)
+- Azure Log Analytics
 - PowerShell
 - WPF
 - VirusTotal API
