@@ -1,0 +1,17 @@
+// INTERACTIVE Signin
+SigninLogs
+| where ResultType == 0 | where TimeGenerated > ago(90d)
+| where UserPrincipalName =~ "" //| where AuthenticationRequirement =~ "multiFactorAuthentication"
+| extend Device_Properties = strcat_delim(" || ", tostring(DeviceDetail.displayName), tostring(DeviceDetail.operatingSystem), strcat("Managed: ", tostring(DeviceDetail.isManaged)))
+| summarize Logins = count(), First = min(TimeGenerated), Last = max(TimeGenerated), Device = make_set(Device_Properties), IPs = make_set(IPAddress) by Location, UserPrincipalName
+| order by Last desc
+ 
+
+ // NON-INTERACTIVE Signin
+AADNonInteractiveUserSignInLogs
+| where ResultType == 0 | where TimeGenerated > ago(90d)
+| where UserPrincipalName =~ "" //| where AuthenticationRequirement =~ "multiFactorAuthentication"
+| extend Device = todynamic(DeviceDetail)
+| extend Device_Properties = strcat_delim(" || ", tostring(Device.displayName), tostring(Device.operatingSystem), strcat("Managed: ", tostring(Device.isManaged)))
+| summarize Logins = count(), First = min(TimeGenerated), Last = max(TimeGenerated), Device = make_set(Device_Properties), IPs = make_set(IPAddress) by Location, UserPrincipalName
+| order by Last desc
