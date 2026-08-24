@@ -1,0 +1,8 @@
+// Remote IP Access Summary
+// Identifies URLs, devices, ports and processes associated with a target IP.
+let TargetIP = "";
+DeviceNetworkEventsDemo
+| where RemoteIP == TargetIP and ActionType == "ConnectionSuccess"
+| extend RemoteUrl = iff(isempty(RemoteUrl), "No URL/FQDN", tolower(RemoteUrl))
+| summarize Access = count(), DeviceCount = dcount(DeviceName), Devices = make_set(DeviceName, 10), Ports = make_set(RemotePort, 10), Processes = make_set(InitiatingProcessFileName), Commands = make_set(InitiatingProcessCommandLine, 5),Protocols = make_set(Protocol, 20), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated) by RemoteUrl
+| order by Access desc
