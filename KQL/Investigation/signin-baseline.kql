@@ -1,0 +1,30 @@
+// INTERACTIVE SIGN-IN BASELINE
+let Time_Range = 90d;
+let Target_UPN = "";
+SigninLogs
+| where TimeGenerated > ago(Time_Range) and ResultType == 0
+| where isempty(Target_UPN) or UserPrincipalName contains Target_UPN
+| extend Device_Name=tostring(DeviceDetail.displayName), Device_ID=tostring(DeviceDetail.deviceId), Device_OS=tostring(DeviceDetail.operatingSystem), Device_Managed=tostring(DeviceDetail.isManaged)
+| extend Device_Key=case(isnotempty(Device_ID), strcat("ID: ", tolower(Device_ID)), isnotempty(Device_Name), strcat("Name: ", tolower(Device_Name)), "")
+| extend Device_Properties=strcat_delim(" || ", iff(isempty(Device_Name), "Unidentified", Device_Name), Device_OS, strcat("Managed: ", Device_Managed), strcat("ID: ", Device_ID))
+| extend Authentication_Type=case(AuthenticationRequirement =~ "multiFactorAuthentication", "MFA", AuthenticationRequirement =~ "singleFactorAuthentication", "Single-factor", "Unknown")
+| summarize Logins=count(), Known_Devices=dcountif(Device_Key, isnotempty(Device_Key)), Unidentified_Records=countif(isempty(Device_Key)), First=min(TimeGenerated), Last=max(TimeGenerated), Devices=make_set(Device_Properties), IPs=make_set(IPAddress), MFA_Logins=countif(Authentication_Type == "MFA"), Single_Factor_Logins=countif(Authentication_Type == "Single-factor"), Unknown_Authentication=countif(Authentication_Type == "Unknown") by Location, UserPrincipalName
+| extend Distinct_Devices=Known_Devices+iff(Unidentified_Records > 0, 1, 0), MFA_Percentage=round(100.0*MFA_Logins/Logins, 2), Single_Factor_Percentage=round(100.0*Single_Factor_Logins/Logins, 2)
+| project-away Known_Devices, Unidentified_Records
+| order by Last desc
+
+// NON-INTERACTIVE SIGN-IN BASELINE
+let Time_Range = 10d;
+let Target_UPN = "";
+AADNonInteractiveUserSignInLogs
+| where TimeGenerated > ago(Time_Range) and ResultType == 0
+| where isempty(Target_UPN) or UserPrincipalName contains Target_UPN
+| extend Device_Dynamic=todynamic(DeviceDetail)
+| extend Device_Name=tostring(Device_Dynamic.displayName), Device_ID=tostring(Device_Dynamic.deviceId), Device_OS=tostring(Device_Dynamic.operatingSystem), Device_Managed=tostring(Device_Dynamic.isManaged)
+| extend Device_Key=case(isnotempty(Device_ID), strcat("ID: ", tolower(Device_ID)), isnotempty(Device_Name), strcat("Name: ", tolower(Device_Name)), "")
+| extend Device_Properties=strcat_delim(" || ", iff(isempty(Device_Name), "Unidentified", Device_Name), Device_OS, strcat("Managed: ", Device_Managed), strcat("ID: ", Device_ID))
+| extend Authentication_Type=case(AuthenticationRequirement =~ "multiFactorAuthentication", "MFA", AuthenticationRequirement =~ "singleFactorAuthentication", "Single-factor", "Unknown")
+| summarize Logins=count(), Known_Devices=dcountif(Device_Key, isnotempty(Device_Key)), Unidentified_Records=countif(isempty(Device_Key)), First=min(TimeGenerated), Last=max(TimeGenerated), Devices=make_set(Device_Properties), IPs=make_set(IPAddress), MFA_Logins=countif(Authentication_Type == "MFA"), Single_Factor_Logins=countif(Authentication_Type == "Single-factor"), Unknown_Authentication=countif(Authentication_Type == "Unknown") by Location, UserPrincipalName
+| extend Distinct_Devices=Known_Devices+iff(Unidentified_Records > 0, 1, 0), MFA_Percentage=round(100.0*MFA_Logins/Logins, 2), Single_Factor_Percentage=round(100.0*Single_Factor_Logins/Logins, 2)
+| project-away Known_Devices, Unidentified_Records
+| order by Last desc
