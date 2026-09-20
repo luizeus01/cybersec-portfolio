@@ -1,0 +1,14 @@
+// DEVICE TELEMETRY COVERAGE SUMMARY
+// Use this query to identify which tables contain telemetry for a device, the available time range, and the number of events found.
+// Note: First_Telemetry represents the earliest event within the retention period, not necessarily the device's actual onboarding date.
+
+// REFERENCE:
+// Microsoft — Advanced Hunting Schema:
+// https://learn.microsoft.com/defender-xdr/advanced-hunting-schema-tables
+
+let Target_Device = "workstation-01.contoso.local";
+union withsource=Source_Table isfuzzy=true DeviceInfo, DeviceEvents, DeviceProcessEvents, DeviceLogonEvents, DeviceNetworkEvents, DeviceFileEvents, DeviceRegistryEvents, DeviceImageLoadEvents
+| where DeviceName =~ Target_Device
+| summarize First_Telemetry=min(TimeGenerated), Last_Telemetry=max(TimeGenerated), Total_Events=count() by Source_Table
+| extend Telemetry_Duration=Last_Telemetry-First_Telemetry
+| order by First_Telemetry asc

@@ -1,4 +1,4 @@
-// INTERACTIVE SIGN-IN BASELINE
+// INTERACTIVE Sign-in BASELINE
 let Time_Range = 90d;
 let Target_UPN = "";
 SigninLogs
@@ -13,7 +13,7 @@ SigninLogs
 | project-away Known_Devices, Unidentified_Records
 | order by Last desc
 
-// NON-INTERACTIVE SIGN-IN BASELINE
+// NON-INTERACTIVE Sign-in BASELINE
 let Time_Range = 10d;
 let Target_UPN = "";
 AADNonInteractiveUserSignInLogs

@@ -1,0 +1,43 @@
+// QUERY 1 — RAW AUTHENTICATION METHODS INVENTORY
+// Last Updated: 2026-09-19
+// Purpose: identify the raw authentication method values recorded in the tenant.
+// Use this query first to review the available values before applying normalization.
+
+SigninLogs
+| where TimeGenerated > ago(90d)
+| where ResultType == 0
+| mv-expand Auth_Detail=todynamic(AuthenticationDetails)
+| extend Raw_Authentication_Method=tostring(Auth_Detail.authenticationMethod)
+| where isnotempty(Raw_Authentication_Method)
+| summarize Events=count(), Users=dcount(UserPrincipalName) by Raw_Authentication_Method
+| order by Events desc
+
+
+// QUERY 2 — NORMALIZED AUTHENTICATION METHODS USAGE
+// Last Updated: 2026-09-19
+// Purpose: normalize authentication method names and count distinct users by method.
+// Run this query after reviewing Query 1 and adjusting the case() mapping when required.
+// This reports methods observed in successful sign-ins, not methods registered by users.
+
+let Start_Time = datetime(2026-06-01);
+let End_Time = datetime(2026-09-19); // Exclusive end time
+SigninLogs
+| where TimeGenerated >= Start_Time and TimeGenerated < End_Time
+| where ResultType == 0
+| extend Authentication_Details=todynamic(AuthenticationDetails)
+| mv-expand Auth_Detail=Authentication_Details
+| extend Raw_Authentication_Method=tostring(Auth_Detail.authenticationMethod), Authentication_Succeeded=tobool(Auth_Detail.succeeded)
+| where Authentication_Succeeded == true
+| where isnotempty(Raw_Authentication_Method) and Raw_Authentication_Method !~ "Previously satisfied"
+| extend Authentication_Method=case(
+    Raw_Authentication_Method =~ "Mobile app notification", "Microsoft Authenticator Push",
+    Raw_Authentication_Method =~ "Companion mobile app notification", "Authenticator Lite / Outlook Push",
+    Raw_Authentication_Method =~ "OATH verification code", "OATH / TOTP",
+    Raw_Authentication_Method contains "Phone call approval", "Phone Call",
+    Raw_Authentication_Method =~ "Fido Key", "FIDO2 Security Key",
+    Raw_Authentication_Method =~ "Passkey (device-bound)", "Device-Bound Passkey",
+    Raw_Authentication_Method =~ "Passwordless Microsoft Authenticator", "Microsoft Authenticator Passwordless",
+    Raw_Authentication_Method)
+//| where Authentication_Method in ("Microsoft Authenticator Push", "Phone call", "Device-Bound Passkey", "FIDO2 Security Key") <-- Use this if you want to filter by only specific Authentication Methods
+| summarize User_Count=dcount(UserPrincipalName), Sample_Users=make_set(UserPrincipalName, 10) by Authentication_Method
+| order by User_Count desc

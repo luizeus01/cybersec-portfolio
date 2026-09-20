@@ -1,6 +1,5 @@
-// Signin
+// INTERACTIVE Signin
 // KQL used to get sign-in from user and get some details from IdentityInfo Table
-
 let Time_Range = 1d;
 let Result_Filter = ""; // "", "success", "failure" or an specificaly ResultType 50126
 let Target_UPN = "";
