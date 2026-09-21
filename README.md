@@ -69,7 +69,7 @@ Featured queries:
 
 #### Identity
 
-- [`authentication-methods-used.kql`](KQL/Investigation/Identity/authentication-methods-used.kql)
+- [`authentication-methods-used.kql`](KQL/Investigation/Identity/Sign-ins/authentication-methods-used.kql)
 - [`signin-baseline.kql`](KQL/Investigation/Identity/Sign-ins/signin-baseline.kql)
 - [`user-interactive-signin.kql`](KQL/Investigation/Identity/Sign-ins/user-interactive-signin.kql)
 - [`user-noninteractive-signin.kql`](KQL/Investigation/Identity/Sign-ins/user-noninteractive-signin.kql)
