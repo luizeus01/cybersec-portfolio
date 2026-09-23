@@ -1,27 +1,31 @@
 // DEVICE PROCESS ACTIVITY SEARCH
-// Use this query to search for processes and their execution chains by device, file, or command.
-// Empty parameters do not apply their respective filters.
-//
+// Use this query to search for processes and their execution chains by device, user, file, or command.
+// Date: 2026-09-23
+
 // REFERENCE:
 // Microsoft — DeviceProcessEvents:
 // https://learn.microsoft.com/defender-xdr/advanced-hunting-deviceprocessevents-table
 
-let Target_Device = "";
-let Target_FileName = "";
-let Target_Initiating_FileName = "";
-let Target_Command = "";
-let Target_Initiating_Command = "";
+let Device = "";
+let Account_Name = "";
+let Account_UPN = "";
+let File_Name = "";
+let Initiating_File_Name = "";
+let Command = "";
+let Initiating_Command = "";
 let Time_Range = 1d;
 DeviceProcessEvents
 | where TimeGenerated >= ago(Time_Range)
-| where isempty(Target_Device) or DeviceName has Target_Device
-| where isempty(Target_FileName) or FileName has Target_FileName
-| where isempty(Target_Initiating_FileName) or InitiatingProcessFileName has Target_Initiating_FileName
-| where isempty(Target_Command) or ProcessCommandLine has Target_Command
-| where isempty(Target_Initiating_Command) or InitiatingProcessCommandLine has Target_Initiating_Command
+| where isempty(Device) or DeviceName has Device
+| where isempty(Account_Name) or AccountName has Account_Name
+| where isempty(Account_UPN) or AccountUpn has Account_UPN
+| where isempty(File_Name) or FileName has File_Name
+| where isempty(Initiating_File_Name) or InitiatingProcessFileName has Initiating_File_Name
+| where isempty(Command) or ProcessCommandLine has Command
+| where isempty(Initiating_Command) or InitiatingProcessCommandLine has Initiating_Command
 | extend Process_Chain=strcat_delim(" -> ", iff(isempty(InitiatingProcessParentFileName), "N/A", InitiatingProcessParentFileName), InitiatingProcessFileName, FileName)
 | extend Process_Chain_Folders=strcat_delim(" -> ", InitiatingProcessFolderPath, FolderPath), Process_Chain_SHA1=strcat_delim(" -> ", InitiatingProcessSHA1, SHA1)
 | extend User_UPN=iff(isempty(AccountUpn), "N/A", AccountUpn), Commands_Chain=strcat_delim(" -> ", InitiatingProcessCommandLine, ProcessCommandLine)
 | extend Remote_Execution=case(IsProcessRemoteSession == true, strcat("YES || Device: ", ProcessRemoteSessionDeviceName, " || IP: ", ProcessRemoteSessionIP), IsInitiatingProcessRemoteSession == true, strcat("PARENT || Device: ", InitiatingProcessRemoteSessionDeviceName, " || IP: ", InitiatingProcessRemoteSessionIP), "No")
-| project TimeGenerated, DeviceName, DeviceId, AccountDomain, AccountName, User_UPN, Remote_Execution, FileName, InitiatingProcessFileName, Process_Chain, Process_Chain_Folders, Process_Chain_SHA1, Commands_Chain, ProcessId, InitiatingProcessId, ProcessVersionInfoCompanyName, ProcessVersionInfoProductName, ReportId
+| project TimeGenerated, ActionType, DeviceName, DeviceId, AccountDomain, AccountName, User_UPN, Remote_Execution, FileName, InitiatingProcessFileName, Process_Chain, Process_Chain_Folders, Process_Chain_SHA1, Commands_Chain, ProcessCreationTime, ProcessId, InitiatingProcessCreationTime, InitiatingProcessId, InitiatingProcessParentId, ProcessVersionInfoCompanyName, ProcessVersionInfoProductName, ReportId
 | order by TimeGenerated desc
